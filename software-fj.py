@@ -46,21 +46,28 @@ class EntidadBase(ABC):
     def describir(self):
         pass
  
+#Modificación 3, Se agregan setters con validación de nombre (no vacío ni espacios) y de email (formato), (Ingrith Toro)
 class Cliente(EntidadBase):
     def __init__(self, id_cliente, nombre, email):
         super().__init__(id_cliente)
-        if nombre == "":        # <-- DEFECTO 3: solo revisa vacio,
-            raise ErrorFJ("Nombre vacio")  #   no valida email ni espacios
-        self._nombre = nombre
-        self._email = email
+        self.nombre = nombre   # pasa por el setter
+        self.email = email     # pasa por el setter
     @property
-    def nombre(self):
-        return self._nombre
+    def nombre(self): return self._nombre
+    @nombre.setter
+    def nombre(self, valor):
+        if not valor or not valor.strip():
+            raise ClienteInvalidoError("El nombre no puede estar vacio.")
+        self._nombre = valor
     @property
-    def email(self):
-        return self._email
+    def email(self): return self._email
+    @email.setter
+    def email(self, valor):
+        if "@" not in valor or "." not in valor:
+            raise ClienteInvalidoError(f"Correo invalido: '{valor}'")
+        self._email = valor
     def describir(self):
-        return "Cliente " + self._id_entidad + ": " + self._nombre
+        return f"Cliente {self.id_entidad}: {self.nombre} ({self.email})"
 
 #-----------------------------------------------------------------------#
 # Servicios y sus implementaciones para el software de gestión de servicios
